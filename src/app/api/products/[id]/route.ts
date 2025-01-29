@@ -54,6 +54,7 @@ export async function PUT(
           attributes: variant.attributes,
         })),
       },
+      images: body.images,
     },
     include: {
       category: true,

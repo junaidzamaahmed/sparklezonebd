@@ -18,7 +18,11 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const brand = await db.brand.create({
-      data: { name: body.name, description: body.description },
+      data: {
+        name: body.name,
+        description: body.description,
+        image: body.image,
+      },
     });
     return NextResponse.json(brand);
   } catch (error) {

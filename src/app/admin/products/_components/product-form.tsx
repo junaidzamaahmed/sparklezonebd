@@ -22,6 +22,9 @@ import {
   ProductVariant,
 } from "@prisma/client";
 import { Checkbox } from "@/components/ui/checkbox";
+import Image from "next/image";
+import { storage } from "@/utils/firebaseConfig";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export function ProductForm({
   product,
@@ -41,7 +44,10 @@ export function ProductForm({
     product?.variants || []
   );
   const [variantAttributes, setVariantAttributes] = useState<string[]>([]);
-
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [productImages, setProductImages] = useState<string[]>(
+    (product?.images as string[]) || []
+  );
   const router = useRouter();
 
   useEffect(() => {
@@ -140,42 +146,89 @@ export function ProductForm({
     setVariants(newVariants);
   }
 
+  function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const files = event.target.files;
+    if (files) {
+      const newFiles = Array.from(files);
+      setUploadedFiles((prevFiles) => [...prevFiles, ...newFiles]);
+
+      // Create preview URLs
+      const imageUrls = newFiles.map((file) => URL.createObjectURL(file));
+      setProductImages((prevImages) => [...prevImages, ...imageUrls]);
+    }
+  }
+
+  function removeImage(imageUrl: string) {
+    setProductImages((prevImages) =>
+      prevImages.filter((img) => img !== imageUrl)
+    );
+    // Also remove from uploadedFiles if it's a new file
+    setUploadedFiles((prevFiles) =>
+      prevFiles.filter((file) => URL.createObjectURL(file) !== imageUrl)
+    );
+  }
+
+  async function uploadImagesToFirebase(): Promise<string[]> {
+    const uploadPromises = uploadedFiles.map(async (file) => {
+      const storageRef = ref(storage, `products/${Date.now()}-${file.name}`);
+      const snapshot = await uploadBytes(storageRef, file);
+      return getDownloadURL(snapshot.ref);
+    });
+
+    const uploadedUrls = await Promise.all(uploadPromises);
+
+    // Combine existing URLs (that weren't removed) with new uploaded URLs
+    const existingUrls = productImages.filter(
+      (url) => !url.startsWith("blob:")
+    );
+    return [...existingUrls, ...uploadedUrls];
+  }
+
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
 
-    const formData = new FormData(event.currentTarget);
-    const productData = {
-      name: formData.get("name"),
-      description: formData.get("description"),
-      regularPrice: formData.get("regularPrice"),
-      discountPrice: formData.get("discountPrice"),
-      stock: formData.get("stock"),
-      categoryId: formData.get("categoryId"),
-      brandId: formData.get("brandId"),
-      attributes,
-      variants,
-    };
+    try {
+      const formData = new FormData(event.currentTarget);
+      const rawData = Object.fromEntries(formData);
 
-    const url = product ? `/api/products/${product.id}` : "/api/products";
-    const method = product ? "PUT" : "POST";
+      // Upload images to Firebase and get URLs
+      const imageUrls = await uploadImagesToFirebase();
 
-    const response = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(productData),
-    });
+      const productData = {
+        ...rawData,
+        regularPrice: Number(rawData.regularPrice),
+        stock: Number(rawData.stock),
+        discountPrice: rawData.discountPrice
+          ? Number(rawData.discountPrice)
+          : undefined,
+        images: imageUrls,
+        attributes,
+        variants,
+      };
+      console.log(productData);
 
-    setLoading(false);
+      const url = product ? `/api/products/${product.id}` : "/api/products";
+      const method = product ? "PUT" : "POST";
 
-    if (response.ok) {
-      router.push("/admin/products");
-      router.refresh();
-    } else {
-      // Handle error
-      console.error("Failed to save product");
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(productData),
+      });
+
+      if (response.ok) {
+        router.push("/admin/products");
+        router.refresh();
+      } else {
+        console.error("Failed to save product");
+      }
+    } catch (error) {
+      console.error("Error saving product:", error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -224,6 +277,39 @@ export function ProductForm({
           required
         />
       </div>
+      {/* Upload multiple images */}
+      <div className="space-y-2">
+        <Label htmlFor="images">Images</Label>
+        <Input type="file" multiple onChange={handleImageChange} />
+      </div>
+      {/* Preview images */}
+      {productImages.length > 0 && (
+        <div className="space-y-2">
+          <Label htmlFor="images">Preview Images</Label>
+          <div id="images" className="flex flex-wrap gap-2">
+            {productImages.map((image) => (
+              <div key={image} className="relative">
+                <Image
+                  src={image}
+                  alt="Product Image"
+                  className="w-20 h-20 object-cover"
+                  width={80}
+                  height={80}
+                />
+                <Button
+                  type="button"
+                  onClick={() => removeImage(image)}
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-0 right-0 bg-white"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="space-y-2">
         <Label htmlFor="categoryId">Category</Label>
         <Select name="categoryId" defaultValue={product?.categoryId}>

@@ -33,6 +33,7 @@ model Brand {
   id          String    @id @default(uuid())
   name        String
   description String?
+  image       String?
   products    Product[]
 }
 
@@ -45,6 +46,7 @@ model Product {
   regularPrice  Float
   discountPrice Float?
   stock         Int
+  images        String[]
   category      Category           @relation(fields: [categoryId], references: [id])
   categoryId    String
   brand         Brand              @relation(fields: [brandId], references: [id])

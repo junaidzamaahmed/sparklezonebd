@@ -43,6 +43,7 @@ export async function POST(request: Request) {
             attributes: variant.attributes,
           })),
         },
+        images: body.images,
       },
       include: {
         category: true,
