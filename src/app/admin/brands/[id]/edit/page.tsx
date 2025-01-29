@@ -4,7 +4,7 @@ import { BrandForm } from "../../_components/brand-form";
 export default async function EditBrandPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
   const brand = await db.brand.findUnique({
