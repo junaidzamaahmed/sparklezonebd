@@ -1,6 +1,6 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
-import { WebhookEvent } from "@clerk/nextjs/server";
+import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
 import { db } from "@/utils/db";
 
 export async function POST(req: Request) {
@@ -50,13 +50,21 @@ export async function POST(req: Request) {
 
   if (evt.type === "user.created") {
     try {
-      await db.user.create({
+      // Set metadata role
+      const client = await clerkClient();
+      await client.users.updateUserMetadata(evt.data.id, {
+        publicMetadata: {
+          isAdmin: false,
+        },
+      });
+      const user = await db.user.create({
         data: {
           clerkId: evt.data.id,
           email: evt.data.email_addresses[0].email_address,
           name: evt.data.first_name + " " + evt.data.last_name,
         },
       });
+      console.log("User created:", user);
     } catch (error) {
       console.error("Error: Could not create user", error);
     }
