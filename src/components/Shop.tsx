@@ -30,7 +30,7 @@ export default function Shop() {
   // Update filters
   const updateFilters = useCallback(
     (updates: Record<string, string>) => {
-      const newParams = new URLSearchParams(searchParams);
+      const newParams = new URLSearchParams(searchParams.toString());
       Object.entries(updates).forEach(([key, value]) => {
         if (value) {
           newParams.set(key, value);
@@ -38,7 +38,7 @@ export default function Shop() {
           newParams.delete(key);
         }
       });
-      router.replace(`${pathname}?${searchParams.toString()}`);
+      router.replace(`${pathname}?${newParams.toString()}`);
     },
     [pathname, router, searchParams]
   );
@@ -51,15 +51,19 @@ export default function Shop() {
 
   // Filter products
   const filteredProducts = products.filter((product) => {
+    // Category filtering
     const matchesCategory =
-      category === "All" || product.category.id === category;
-    const matchesRating =
-      Math.floor(
-        (product.reviews?.reduce((acc, curr) => acc + curr.rating, 0) || 0) /
-          (product.reviews?.length || 1)
-      ) >= minRating;
+      category === "All" || product.category.name === category; // Changed from id to name
+
+    // Rating calculation
+    const averageRating = product.rating || 0; // Use the product's rating directly
+    const matchesRating = averageRating >= minRating;
+
+    // Price filtering
     const matchesPrice =
       product.regularPrice >= minPrice && product.regularPrice <= maxPrice;
+
+    // Search filtering
     const matchesSearch = search
       ? product.name.toLowerCase().includes(search.toLowerCase()) ||
         product.category.name.toLowerCase().includes(search.toLowerCase())
@@ -76,7 +80,7 @@ export default function Shop() {
       case "price-high":
         return b.regularPrice - a.regularPrice;
       case "rating":
-        return b.regularPrice - a.regularPrice;
+        return (b.rating || 0) - (a.rating || 0); // Fixed rating sort
       case "newest":
         return (
           new Date(b.createdAt || 0).getTime() -
