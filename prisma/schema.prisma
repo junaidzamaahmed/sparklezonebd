@@ -73,6 +73,7 @@ model ProductVariant {
   price      Float
   stock      Int
   attributes Json
+  name       String?
 }
 
 model Order {
