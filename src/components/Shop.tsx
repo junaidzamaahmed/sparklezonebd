@@ -1,34 +1,37 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Star, SlidersHorizontal, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "./products/ProductCard";
 import { useProducts } from "@/context/ProductsContext";
 
 // Filter types
-type PriceRange = [number, number];
 type SortOption = "featured" | "price-low" | "price-high" | "rating" | "newest";
 
-const categories = ["All", "Skincare", "Makeup", "Hair Care", "Body Care"];
 const ratings = [5, 4, 3, 2, 1];
 
 export default function Shop() {
-  const { products, loading } = useProducts();
+  const { filteredProducts, filterProducts, categories, priceRange, loading } =
+    useProducts();
+
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-  const [priceRange, setPriceRange] = useState<PriceRange>([0, 100]);
+  const [localPriceRange, setLocalPriceRange] = useState({
+    min: priceRange.min,
+    max: priceRange.max,
+  });
 
   // Get filters from URL
   const category = searchParams.get("category") || "All";
   const minRating = Number(searchParams.get("rating")) || 0;
   const minPrice = Number(searchParams.get("minPrice")) || 0;
-  const maxPrice = Number(searchParams.get("maxPrice")) || 100;
+  const maxPrice = Number(searchParams.get("maxPrice")) || 10000;
   const sort = (searchParams.get("sort") as SortOption) || "featured";
   const search = searchParams.get("search") || "";
 
-  // Update filters
+  // Update filters using the context
   const updateFilters = useCallback(
     (updates: Record<string, string>) => {
       const newParams = new URLSearchParams(searchParams.toString());
@@ -39,39 +42,26 @@ export default function Shop() {
           newParams.delete(key);
         }
       });
+
+      const filters = {
+        category: newParams.get("category") || "All",
+        minPrice: Number(newParams.get("minPrice")) || 0,
+        maxPrice: Number(newParams.get("maxPrice")) || priceRange.max,
+        minRating: Number(newParams.get("rating")) || 0,
+        search: newParams.get("search") || "",
+        sort: (newParams.get("sort") as SortOption) || "featured",
+      };
+
+      filterProducts(filters);
       router.replace(`${pathname}?${newParams.toString()}`);
     },
-    [pathname, router, searchParams]
+    [pathname, router, searchParams, filterProducts, priceRange.max]
   );
 
   // Reset all filters
   const resetFilters = () => {
     router.replace(`${pathname}`);
-    setPriceRange([0, 100]);
   };
-
-  // Filter products
-  const filteredProducts = products.filter((product) => {
-    // Category filtering
-    const matchesCategory =
-      category === "All" || product.category.name === category; // Changed from id to name
-
-    // Rating calculation
-    const averageRating = product.rating || 0; // Use the product's rating directly
-    const matchesRating = averageRating >= minRating;
-
-    // Price filtering
-    const matchesPrice =
-      product.regularPrice >= minPrice && product.regularPrice <= maxPrice;
-
-    // Search filtering
-    const matchesSearch = search
-      ? product.name.toLowerCase().includes(search.toLowerCase()) ||
-        product.category.name.toLowerCase().includes(search.toLowerCase())
-      : true;
-
-    return matchesCategory && matchesRating && matchesPrice && matchesSearch;
-  });
 
   // Sort products
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -92,17 +82,21 @@ export default function Shop() {
     }
   });
 
-  // Update price range in URL when slider changes
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      updateFilters({
-        minPrice: priceRange[0].toString(),
-        maxPrice: priceRange[1].toString(),
-      });
-    }, 500);
+  // Update the price range inputs without immediate filtering
+  const handlePriceChange = (type: "min" | "max", value: number) => {
+    setLocalPriceRange((prev) => ({
+      ...prev,
+      [type]: value,
+    }));
+  };
 
-    return () => clearTimeout(timer);
-  }, [priceRange, updateFilters]);
+  // New apply filters function
+  const applyFilters = () => {
+    updateFilters({
+      minPrice: localPriceRange.min.toString(),
+      maxPrice: localPriceRange.max.toString(),
+    });
+  };
 
   if (loading) {
     return (
@@ -168,7 +162,7 @@ export default function Shop() {
           minRating > 0 ||
           search ||
           minPrice > 0 ||
-          maxPrice < 100) && (
+          maxPrice < 10000) && (
           <div className="mb-6 flex flex-wrap gap-2">
             {category !== "All" && (
               <button
@@ -198,10 +192,9 @@ export default function Shop() {
                 <X className="h-4 w-4 ml-2" />
               </button>
             )}
-            {(minPrice > 0 || maxPrice < 100) && (
+            {(minPrice > 0 || maxPrice < 10000) && (
               <button
                 onClick={() => {
-                  setPriceRange([0, 100]);
                   updateFilters({ minPrice: "", maxPrice: "" });
                 }}
                 className="inline-flex items-center px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-sm"
@@ -267,29 +260,35 @@ export default function Shop() {
               <h3 className="font-semibold mb-3">Price Range</h3>
               <div className="px-3">
                 <div className="flex justify-between mb-2 text-sm text-gray-600">
-                  <span>${priceRange[0]}</span>
-                  <span>${priceRange[1]}</span>
+                  <span>${localPriceRange.min}</span>
+                  <span>${localPriceRange.max}</span>
                 </div>
                 <input
                   type="range"
                   min="0"
-                  max="100"
-                  value={priceRange[0]}
+                  max="10000"
+                  value={localPriceRange.min}
                   onChange={(e) =>
-                    setPriceRange([Number(e.target.value), priceRange[1]])
+                    handlePriceChange("min", Number(e.target.value))
                   }
                   className="w-full"
                 />
                 <input
                   type="range"
                   min="0"
-                  max="100"
-                  value={priceRange[1]}
+                  max="10000"
+                  value={localPriceRange.max}
                   onChange={(e) =>
-                    setPriceRange([priceRange[0], Number(e.target.value)])
+                    handlePriceChange("max", Number(e.target.value))
                   }
-                  className="w-full"
+                  className="w-full mb-4"
                 />
+                <button
+                  onClick={applyFilters}
+                  className="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 transition-colors"
+                >
+                  Apply Filters
+                </button>
               </div>
             </div>
 

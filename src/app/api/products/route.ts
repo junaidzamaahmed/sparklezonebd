@@ -4,15 +4,22 @@ import { ProductVariant } from "@prisma/client";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const products = await db.product.findMany({
-    include: {
-      category: true,
-      brand: true,
-      attributes: true,
-      variants: true,
-    },
-  });
-  return NextResponse.json(products);
+  try {
+    const products = await db.product.findMany({
+      include: {
+        category: true,
+        brand: true,
+        attributes: true,
+        variants: true,
+      },
+    });
+    return NextResponse.json(products);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }
 
 export async function POST(request: Request) {
