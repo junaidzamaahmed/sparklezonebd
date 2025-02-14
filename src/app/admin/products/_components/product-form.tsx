@@ -206,7 +206,6 @@ export function ProductForm({
         attributes,
         variants,
       };
-      console.log(productData);
 
       const url = product ? `/api/products/${product.id}` : "/api/products";
       const method = product ? "PUT" : "POST";

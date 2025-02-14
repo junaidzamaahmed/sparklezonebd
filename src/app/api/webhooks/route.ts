@@ -64,7 +64,7 @@ export async function POST(req: Request) {
           name: evt.data.first_name + " " + evt.data.last_name,
         },
       });
-      console.log("User created:", user);
+      console.log(user);
     } catch (error) {
       console.error("Error: Could not create user", error);
     }

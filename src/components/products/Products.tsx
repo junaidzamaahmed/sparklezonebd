@@ -57,15 +57,15 @@ export default function Products() {
           <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
               <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
-                  selectedCategory === category
+                  selectedCategory === category.id
                     ? "bg-orange-400 text-white"
                     : "bg-white text-gray-600 hover:bg-orange-50"
                 }`}
               >
-                {category}
+                {category.name}
               </button>
             ))}
           </div>

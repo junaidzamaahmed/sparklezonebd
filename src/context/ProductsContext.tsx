@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useMemo } from "react";
 import { Product } from "@/app/types/product";
-
+import { Category } from "@prisma/client";
 type ProductsContextType = {
   products: Product[];
   loading: boolean;
@@ -10,12 +10,18 @@ type ProductsContextType = {
   refreshProducts: () => Promise<void>;
   filteredProducts: Product[];
   filterProducts: (filters: FilterOptions) => void;
-  categories: string[];
+  categories: (Category & {
+    subCategories: Category[];
+    parentCategory: Category | null;
+  })[];
   priceRange: { min: number; max: number };
 };
 
 type FilterOptions = {
-  category?: string;
+  category?: Category & {
+    subCategories: Category[];
+    parentCategory: Category | null;
+  };
   minPrice?: number;
   maxPrice?: number;
   minRating?: number;
@@ -35,8 +41,27 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
 
   // Memoize derived data
   const categories = useMemo(() => {
-    const uniqueCategories = new Set(products.map((p) => p.category.name));
-    return ["All", ...Array.from(uniqueCategories)];
+    const uniqueCategories = products.map((p) => ({
+      ...p.category,
+      description: p.category.description || null,
+      parentCategoryId: p.category.parentCategoryId || null,
+      parentCategory: p.category.parentCategory || null,
+      subCategories: p.category.subCategories || [],
+    }));
+
+    const allCategory: Category & {
+      subCategories: Category[];
+      parentCategory: Category | null;
+    } = {
+      id: "all",
+      name: "All",
+      description: null,
+      parentCategoryId: null,
+      subCategories: [],
+      parentCategory: null,
+    };
+
+    return [allCategory, ...uniqueCategories];
   }, [products]);
 
   const priceRange = useMemo(() => {
@@ -50,8 +75,8 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
   const filterProducts = (filters: FilterOptions) => {
     let filtered = [...products];
 
-    if (filters.category && filters.category !== "All") {
-      filtered = filtered.filter((p) => p.category.name === filters.category);
+    if (filters.category && filters.category.id !== "all") {
+      filtered = filtered.filter((p) => p.category.id === filters.category?.id);
     }
 
     if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
@@ -107,7 +132,6 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
         throw new Error("Failed to fetch products");
       }
       const data = await response.json();
-      console.log(data);
       setProducts(data);
       setFilteredProducts(data);
     } catch (err) {

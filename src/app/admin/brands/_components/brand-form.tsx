@@ -67,6 +67,7 @@ export function BrandForm({ brand }: { brand?: Brand }) {
           ...brandData,
           image: imageUrl,
         }),
+        cache: "force-cache",
       });
 
       if (response.ok) {

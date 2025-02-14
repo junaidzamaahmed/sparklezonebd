@@ -7,7 +7,12 @@ export async function GET() {
   try {
     const products = await db.product.findMany({
       include: {
-        category: true,
+        category: {
+          include: {
+            subCategories: true,
+            parentCategory: true,
+          },
+        },
         brand: true,
         attributes: true,
         variants: true,

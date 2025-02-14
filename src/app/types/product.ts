@@ -30,6 +30,8 @@
 //   }[];
 // };
 
+import { Category } from "@prisma/client";
+
 export interface ProductVariant {
   id: string;
   sku: string;
@@ -52,9 +54,10 @@ export interface Product {
   discountPrice?: number;
   stock: number;
   images: string[];
-  category: {
-    id: string;
-    name: string;
+  category: Category & {
+    subCategories: Category[];
+    parentCategoryId: string | null;
+    parentCategory: Category | null;
   };
   brand: {
     id: string;

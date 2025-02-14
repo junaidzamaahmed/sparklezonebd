@@ -10,12 +10,13 @@ import {
   ShoppingCart,
   Check,
 } from "lucide-react";
-import { products } from "@/data/products";
 import type { ProductVariant } from "../../app/types/product";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import { useProducts } from "@/context/ProductsContext";
 
 export default function ProductDetails() {
+  const { products } = useProducts();
   const { id } = useParams();
   const product = products.find((p) => p.id === id);
   const { addItem } = useCart();
