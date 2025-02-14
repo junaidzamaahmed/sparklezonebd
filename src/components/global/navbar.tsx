@@ -40,9 +40,11 @@ export function Navbar() {
             >
               <Menu className="h-6 w-6" />
             </button>
-            <div className="ml-4 font-bold text-2xl text-orange-500">
-              <Image height={50} src={logo} alt="Logo" />
-            </div>
+            <Link href="/">
+              <div className="ml-4 font-bold text-2xl text-orange-500">
+                <Image height={50} src={logo} alt="Logo" />
+              </div>
+            </Link>
           </div>
 
           {/* Search Bar */}

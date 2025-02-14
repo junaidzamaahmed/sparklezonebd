@@ -1,6 +1,7 @@
 "use client";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 const categories = [
@@ -195,9 +196,9 @@ export function Hero() {
                               }
                               onMouseLeave={() => setActiveSubcategory(null)}
                             >
-                              <a
+                              <Link
                                 href="#"
-                                className={`block px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors duration-200 flex items-center justify-between ${
+                                className={`px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors duration-200 flex items-center justify-between ${
                                   activeSubcategory === subcategory.name
                                     ? "bg-orange-50 text-orange-500"
                                     : ""
@@ -211,7 +212,7 @@ export function Hero() {
                                       : "opacity-50"
                                   }`}
                                 />
-                              </a>
+                              </Link>
 
                               {/* Second Level Flyout */}
                               {activeSubcategory === subcategory.name && (
@@ -221,13 +222,13 @@ export function Hero() {
                                 >
                                   <div className="py-2">
                                     {subcategory.items.map((item) => (
-                                      <a
+                                      <Link
                                         key={item}
                                         href="#"
                                         className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-500 transition-colors duration-200"
                                       >
                                         {item}
-                                      </a>
+                                      </Link>
                                     ))}
                                   </div>
                                 </div>

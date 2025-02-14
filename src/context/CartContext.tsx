@@ -1,5 +1,5 @@
 import { CartItem } from "@/app/types/cart";
-import React, { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useReducer } from "react";
 
 interface CartState {
   items: CartItem[];
@@ -7,14 +7,14 @@ interface CartState {
 
 type CartAction =
   | { type: "ADD_ITEM"; payload: CartItem }
-  | { type: "REMOVE_ITEM"; payload: number }
-  | { type: "UPDATE_QUANTITY"; payload: { id: number; quantity: number } };
+  | { type: "REMOVE_ITEM"; payload: string }
+  | { type: "UPDATE_QUANTITY"; payload: { id: string; quantity: number } };
 
 interface CartContextType {
   state: CartState;
   addItem: (item: CartItem) => void;
-  removeItem: (id: number) => void;
-  updateQuantity: (id: number, quantity: number) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   getItemCount: () => number;
   getTotal: () => number;
 }
@@ -64,24 +64,7 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 }
 
 const initialState: CartState = {
-  items: [
-    {
-      id: 1,
-      name: "Revolution Pro Hydra Cream",
-      price: 24.99,
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80",
-    },
-    {
-      id: 2,
-      name: "Revolution Beauty Palette",
-      price: 19.99,
-      quantity: 2,
-      image:
-        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80",
-    },
-  ],
+  items: [],
 };
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
@@ -91,11 +74,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: "ADD_ITEM", payload: item });
   };
 
-  const removeItem = (id: number) => {
+  const removeItem = (id: string) => {
     dispatch({ type: "REMOVE_ITEM", payload: id });
   };
 
-  const updateQuantity = (id: number, quantity: number) => {
+  const updateQuantity = (id: string, quantity: number) => {
     dispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
   };
 

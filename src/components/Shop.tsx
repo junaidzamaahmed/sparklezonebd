@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { Star, SlidersHorizontal, X } from "lucide-react";
-import { products } from "@/data/products";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "./products/ProductCard";
+import { useProducts } from "@/context/ProductsContext";
 
 // Filter types
 type PriceRange = [number, number];
@@ -13,6 +13,7 @@ const categories = ["All", "Skincare", "Makeup", "Hair Care", "Body Care"];
 const ratings = [5, 4, 3, 2, 1];
 
 export default function Shop() {
+  const { products, loading } = useProducts();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -102,6 +103,17 @@ export default function Shop() {
 
     return () => clearTimeout(timer);
   }, [priceRange, updateFilters]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen">

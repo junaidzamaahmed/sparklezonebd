@@ -2,6 +2,7 @@
 
 import { Navbar } from "@/components/global/navbar";
 import { CartProvider } from "@/context/CartContext";
+import { ProductsProvider } from "@/context/ProductsContext";
 
 export default function LayoutComponent({
   children,
@@ -9,11 +10,13 @@ export default function LayoutComponent({
   children: React.ReactNode;
 }>) {
   return (
-    <CartProvider>
-      <Navbar />
-      <div className="overflow-hidden">
-        <div className="md:mt-28">{children}</div>
-      </div>
-    </CartProvider>
+    <ProductsProvider>
+      <CartProvider>
+        <Navbar />
+        <div className="overflow-hidden">
+          <div className="md:mt-28">{children}</div>
+        </div>
+      </CartProvider>
+    </ProductsProvider>
   );
 }
