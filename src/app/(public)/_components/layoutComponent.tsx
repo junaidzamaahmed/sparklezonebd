@@ -14,7 +14,7 @@ export default function LayoutComponent({
       <CartProvider>
         <Navbar />
         <div className="overflow-hidden">
-          <div className="md:mt-28">{children}</div>
+          <div className="mt-20 md:mt-28">{children}</div>
         </div>
       </CartProvider>
     </ProductsProvider>

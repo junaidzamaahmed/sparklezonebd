@@ -11,15 +11,14 @@ import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 
 export default function Cart() {
-  const { state, removeItem, updateQuantity, getItemCount, getTotal } =
-    useCart();
+  const { items, removeItem, updateQuantity, itemsCount, total } = useCart();
 
   return (
     <Sheet>
       <SheetTrigger className="relative">
         <ShoppingCart className="h-6 w-6 text-gray-600" />
         <span className="absolute -top-2 -right-2 h-5 w-5 bg-orange-400 rounded-full text-white text-xs flex items-center justify-center">
-          {getItemCount()}
+          {itemsCount}
         </span>
       </SheetTrigger>
       <SheetContent className="w-full sm:max-w-lg z-[110]">
@@ -29,12 +28,12 @@ export default function Cart() {
 
         <div className="mt-8 flex flex-col h-[calc(100vh-5rem)]">
           <div className="flex-1 overflow-y-auto">
-            {state.items.length === 0 ? (
+            {items.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 Your cart is empty
               </div>
             ) : (
-              state.items.map((item) => (
+              items.map((item) => (
                 <div key={item.id} className="flex gap-4 py-4 border-b">
                   <Image
                     height={100}
@@ -81,11 +80,11 @@ export default function Cart() {
             )}
           </div>
 
-          {state.items.length > 0 && (
+          {items.length > 0 && (
             <div className="border-t py-4 space-y-4">
               <div className="flex justify-between text-base font-medium text-gray-900">
                 <p>Subtotal</p>
-                <p>${getTotal().toFixed(2)}</p>
+                <p>${total.toFixed(2)}</p>
               </div>
               <div className="flex justify-between text-sm text-gray-500">
                 <p>Shipping</p>
@@ -93,7 +92,7 @@ export default function Cart() {
               </div>
               <div className="flex justify-between text-base font-medium text-gray-900">
                 <p>Total</p>
-                <p>${getTotal().toFixed(2)}</p>
+                <p>${total.toFixed(2)}</p>
               </div>
               <button className="w-full bg-orange-400 text-white py-3 px-4 rounded-full font-medium hover:bg-orange-500 transition-colors">
                 Checkout
