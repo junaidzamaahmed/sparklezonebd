@@ -1,40 +1,45 @@
 "use client";
 import React, { useState } from "react";
 import ProductCard from "./ProductCard";
-import { products } from "@/data/products";
-
-const categories = ["All", "Skincare", "Makeup", "Hair Care", "Body Care"];
+import { useProducts } from "@/context/ProductsContext";
 
 export default function Products() {
+  const { products, categories, loading } = useProducts();
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [sortBy, setSortBy] = useState("featured");
+  const [sortBy, setSortBy] = useState<
+    "featured" | "price-low" | "price-high" | "rating"
+  >("featured");
 
-  const filteredProducts = products.filter(
-    (product) =>
-      selectedCategory === "All" || product.category.id === selectedCategory
-  );
+  // Use the products directly and apply filtering
+  const displayProducts = products
+    .filter(
+      (product) =>
+        selectedCategory === "All" || product.category.name === selectedCategory
+    )
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "price-low":
+          return a.regularPrice - b.regularPrice;
+        case "price-high":
+          return b.regularPrice - a.regularPrice;
+        case "rating":
+          return (b.rating || 0) - (a.rating || 0);
+        default:
+          return 0;
+      }
+    })
+    .slice(0, 8); // Show only first 8 products for featured section
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case "price-low":
-        return a.regularPrice - b.regularPrice;
-      case "price-high":
-        return b.regularPrice - a.regularPrice;
-      case "rating":
-        return (
-          Math.floor(
-            (b.reviews?.reduce((acc, curr) => acc + curr.rating, 0) || 0) /
-              (b.reviews?.length || 1)
-          ) -
-          Math.floor(
-            (a.reviews?.reduce((acc, curr) => acc + curr.rating, 0) || 0) /
-              (a.reviews?.length || 1)
-          )
-        );
-      default:
-        return 0;
-    }
-  });
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gray-50">
@@ -67,7 +72,7 @@ export default function Products() {
 
           <select
             value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
+            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
             className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
           >
             <option value="featured">Featured</option>
@@ -77,11 +82,17 @@ export default function Products() {
           </select>
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          {sortedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {displayProducts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600">No products found in this category</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            {displayProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
