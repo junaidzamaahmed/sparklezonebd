@@ -4,7 +4,6 @@ import { Star, SlidersHorizontal, X } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "./products/ProductCard";
 import { useProducts } from "@/context/ProductsContext";
-
 // Filter types
 type SortOption = "featured" | "price-low" | "price-high" | "rating" | "newest";
 
@@ -43,8 +42,12 @@ export default function Shop() {
         }
       });
 
+      const selectedCategory = categories.find(
+        (c) => c.name === (newParams.get("category") || "All")
+      );
+
       const filters = {
-        category: newParams.get("category") || "All",
+        category: selectedCategory,
         minPrice: Number(newParams.get("minPrice")) || 0,
         maxPrice: Number(newParams.get("maxPrice")) || priceRange.max,
         minRating: Number(newParams.get("rating")) || 0,
@@ -55,7 +58,7 @@ export default function Shop() {
       filterProducts(filters);
       router.replace(`${pathname}?${newParams.toString()}`);
     },
-    [pathname, router, searchParams, filterProducts, priceRange.max]
+    [pathname, router, searchParams, filterProducts, priceRange.max, categories]
   );
 
   // Reset all filters
@@ -241,15 +244,15 @@ export default function Shop() {
               <div className="space-y-2">
                 {categories.map((cat) => (
                   <button
-                    key={cat}
-                    onClick={() => updateFilters({ category: cat })}
+                    key={cat.id}
+                    onClick={() => updateFilters({ category: cat.name })}
                     className={`block w-full text-left px-3 py-2 rounded-lg text-sm ${
-                      category === cat
+                      category === cat.name
                         ? "bg-orange-100 text-orange-800"
                         : "text-gray-600 hover:bg-gray-50"
                     }`}
                   >
-                    {cat}
+                    {cat.name}
                   </button>
                 ))}
               </div>
