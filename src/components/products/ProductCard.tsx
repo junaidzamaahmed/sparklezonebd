@@ -63,11 +63,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xl font-semibold text-gray-900">
-              ${price.toFixed(2)}
+              &#2547;{price.toFixed(2)}
             </p>
             {product.discountPrice && (
               <p className="text-sm text-gray-500 line-through">
-                ${product.regularPrice.toFixed(2)}
+                &#2547;{product.regularPrice.toFixed(2)}
               </p>
             )}
           </div>

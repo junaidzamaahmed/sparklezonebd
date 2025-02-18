@@ -26,7 +26,7 @@ export default async function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                ${totalRevenue._sum.totalAmount || 0}
+                &#2547;{totalRevenue._sum.totalAmount || 0}
               </div>
             </CardContent>
           </Card>

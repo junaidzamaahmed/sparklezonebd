@@ -5,7 +5,7 @@ import { useProducts } from "@/context/ProductsContext";
 
 export default function Products() {
   const { products, categories, loading } = useProducts();
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState<
     "featured" | "price-low" | "price-high" | "rating"
   >("featured");
@@ -14,7 +14,7 @@ export default function Products() {
   const displayProducts = products
     .filter(
       (product) =>
-        selectedCategory === "All" || product.category.name === selectedCategory
+        selectedCategory === "all" || product.category.id === selectedCategory
     )
     .sort((a, b) => {
       switch (sortBy) {

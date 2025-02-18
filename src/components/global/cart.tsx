@@ -45,7 +45,7 @@ export default function Cart() {
                   <div className="flex-1">
                     <h3 className="font-medium text-gray-900">{item.name}</h3>
                     <p className="mt-1 text-sm text-gray-500">
-                      ${item.price.toFixed(2)}
+                      &#2547;{item.price.toFixed(2)}
                     </p>
                     <div className="mt-2 flex items-center gap-2">
                       <button
@@ -84,7 +84,7 @@ export default function Cart() {
             <div className="border-t py-4 space-y-4">
               <div className="flex justify-between text-base font-medium text-gray-900">
                 <p>Subtotal</p>
-                <p>${total.toFixed(2)}</p>
+                <p>&#2547;{total.toFixed(2)}</p>
               </div>
               <div className="flex justify-between text-sm text-gray-500">
                 <p>Shipping</p>
@@ -92,7 +92,7 @@ export default function Cart() {
               </div>
               <div className="flex justify-between text-base font-medium text-gray-900">
                 <p>Total</p>
-                <p>${total.toFixed(2)}</p>
+                <p>&#2547;{total.toFixed(2)}</p>
               </div>
               <button className="w-full bg-orange-400 text-white py-3 px-4 rounded-full font-medium hover:bg-orange-500 transition-colors">
                 Checkout

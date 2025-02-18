@@ -202,7 +202,7 @@ export default function Shop() {
                 }}
                 className="inline-flex items-center px-3 py-1 rounded-full bg-orange-100 text-orange-800 text-sm"
               >
-                Price: ${minPrice} - ${maxPrice}
+                Price: &#2547;{minPrice} - &#2547;{maxPrice}
                 <X className="h-4 w-4 ml-2" />
               </button>
             )}
@@ -263,8 +263,8 @@ export default function Shop() {
               <h3 className="font-semibold mb-3">Price Range</h3>
               <div className="px-3">
                 <div className="flex justify-between mb-2 text-sm text-gray-600">
-                  <span>${localPriceRange.min}</span>
-                  <span>${localPriceRange.max}</span>
+                  <span>&#2547;{localPriceRange.min}</span>
+                  <span>&#2547;{localPriceRange.max}</span>
                 </div>
                 <input
                   type="range"

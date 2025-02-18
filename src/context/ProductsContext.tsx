@@ -41,13 +41,12 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
 
   // Memoize derived data
   const categories = useMemo(() => {
-    const uniqueCategories = products.map((p) => ({
-      ...p.category,
-      description: p.category.description || null,
-      parentCategoryId: p.category.parentCategoryId || null,
-      parentCategory: p.category.parentCategory || null,
-      subCategories: p.category.subCategories || [],
-    }));
+    const uniqueCategories = products
+      .map((p) => p.category)
+      .filter(
+        (category, index, self) =>
+          index === self.findIndex((t) => t.id === category.id)
+      );
 
     const allCategory: Category & {
       subCategories: Category[];

@@ -20,7 +20,6 @@ export default function ProductDetails() {
   const { id } = useParams();
   const product = products.find((p) => p.id === id);
   const { addItem } = useCart();
-
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
     product?.variants?.[0] || null
   );
@@ -28,19 +27,27 @@ export default function ProductDetails() {
   const [selectedImage, setSelectedImage] = useState(0);
 
   if (!product) {
-    return <div>Product not found</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    );
   }
 
   const handleAddToCart = () => {
-    if (selectedVariant) {
-      addItem({
-        id: product.id,
-        name: `${product.name} - ${selectedVariant.sku}`,
-        price: selectedVariant.price,
-        quantity,
-        image: product.images[0],
-      });
-    }
+    addItem({
+      id: product.id,
+      name: `${product.name} ${
+        selectedVariant ? "- " + selectedVariant?.sku : ""
+      }`,
+      price:
+        selectedVariant?.price || product.discountPrice || product.regularPrice,
+      quantity,
+      image: product.images[0],
+    });
   };
 
   return (
@@ -106,7 +113,8 @@ export default function ProductDetails() {
                     />
                   ))}
                   <span className="ml-2 text-sm text-gray-600">
-                    {product.rating} ({product.reviews?.length} reviews)
+                    {product?.rating || 0} ({product?.reviews?.length || 0}{" "}
+                    reviews)
                   </span>
                 </div>
                 <div className="flex space-x-4">
@@ -123,40 +131,51 @@ export default function ProductDetails() {
             <p className="text-gray-600">{product.description}</p>
 
             {/* Variants */}
-            {product.variants && (
-              <div className="space-y-4">
-                <h3 className="text-sm font-medium text-gray-900">Size</h3>
-                <div className="grid grid-cols-3 gap-4">
-                  {product.variants.map((variant) => (
-                    <button
-                      key={variant.id}
-                      onClick={() => setSelectedVariant(variant)}
-                      className={`border rounded-lg py-3 px-4 text-sm font-medium ${
-                        selectedVariant?.id === variant.id
-                          ? "border-orange-400 bg-orange-50 text-orange-600"
-                          : variant.stock != 0
-                          ? "border-gray-200 text-gray-900 hover:bg-gray-50"
-                          : "border-gray-200 text-gray-400 cursor-not-allowed"
-                      }`}
-                      disabled={!variant.stock}
-                    >
-                      <span className="block">{variant.sku}</span>
-                      <span className="block mt-1">
-                        {variant.attributes.size}
-                      </span>
-                      <span className="block mt-1">
-                        ${variant.price.toFixed(2)}
-                      </span>
-                      {!variant.stock && (
-                        <span className="block mt-1 text-xs text-red-500">
-                          Out of stock
+            {product?.variants &&
+              product.variants.map((variant) => (
+                <div className="space-y-4" key={variant.id}>
+                  <h3 className="text-sm font-medium text-gray-900">
+                    {variant.attributes.name}
+                  </h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    {product?.variants?.map((variant: ProductVariant) => (
+                      <button
+                        key={variant.id}
+                        onClick={() => setSelectedVariant(variant)}
+                        className={`border rounded-lg py-3 px-4 text-sm font-medium ${
+                          selectedVariant?.id === variant.id
+                            ? "border-orange-400 bg-orange-50 text-orange-600"
+                            : variant.stock != 0
+                            ? "border-gray-200 text-gray-900 hover:bg-gray-50"
+                            : "border-gray-200 text-gray-400 cursor-not-allowed"
+                        }`}
+                        disabled={!variant.stock}
+                      >
+                        <span className="block">{variant?.name || ""}</span>
+                        <span className="block mt-1">
+                          {variant.attributes.name}
                         </span>
-                      )}
-                    </button>
-                  ))}
+                        <span className="block mt-1">
+                          &#2547;{variant.price.toFixed(2)}
+                        </span>
+                        {!variant.stock && (
+                          <span className="block mt-1 text-xs text-red-500">
+                            Out of stock
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              ))}
+
+            {/* Product price */}
+            <p className="font-bold text-2xl">
+              &#2547;
+              {selectedVariant?.price ||
+                product.discountPrice ||
+                product.regularPrice}
+            </p>
 
             {/* Quantity */}
             <div className="flex items-center space-x-4">
@@ -177,7 +196,10 @@ export default function ProductDetails() {
               </div>
               <button
                 onClick={handleAddToCart}
-                disabled={!selectedVariant?.stock}
+                disabled={
+                  (!selectedVariant && !product.stock) ||
+                  (selectedVariant ? !selectedVariant.stock : false)
+                }
                 className="flex-1 bg-orange-400 text-white py-3 px-6 rounded-lg font-medium hover:bg-orange-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 <span className="flex items-center justify-center space-x-2">
@@ -193,7 +215,7 @@ export default function ProductDetails() {
                 Customer Reviews
               </h3>
               <div className="space-y-6">
-                {product.reviews?.map((review) => (
+                {product?.reviews?.map((review) => (
                   <div key={review.id} className="border-b pb-6">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">

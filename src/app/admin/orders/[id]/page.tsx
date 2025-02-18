@@ -48,7 +48,8 @@ export default async function OrderDetailsPage({
               <strong>Status:</strong> <Badge>{order.status}</Badge>
             </p>
             <p>
-              <strong>Total Amount:</strong> ${order.totalAmount.toFixed(2)}
+              <strong>Total Amount:</strong> &#2547;
+              {order.totalAmount.toFixed(2)}
             </p>
           </CardContent>
         </Card>
@@ -78,11 +79,11 @@ export default async function OrderDetailsPage({
             {order.orderItems.map((item) => (
               <li key={item.id} className="mb-2">
                 {item.product.name} - Quantity: {item.quantity} - Regular Price:
-                ${item.product.regularPrice.toFixed(2)}
+                ${<span>&#2547;</span>}
+                {item.product.regularPrice.toFixed(2)}
                 {item.product.discountPrice &&
-                  ` - Discount Price: $${item.product.discountPrice.toFixed(
-                    2
-                  )}`}
+                  ` - Discount Price: ${(<span>&#2547;</span>)}
+                  ${item.product.discountPrice.toFixed(2)}`}
               </li>
             ))}
           </ul>

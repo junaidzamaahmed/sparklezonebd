@@ -1,35 +1,3 @@
-// export type Product = {
-//   id: string;
-//   name: string;
-//   description?: string;
-//   regularPrice: number;
-//   discountPrice?: number;
-//   stock: number;
-//   images: string[];
-//   category: { id: string; name: string };
-//   brand: { id: string; name: string };
-//   createdAt: Date;
-//   tag?: string;
-//   rating?: number;
-//   variants?: {
-//     id: number;
-//     name: string;
-//     price: number;
-//     size: string;
-//     inStock: boolean;
-//   }[];
-//   reviews?: {
-//     id: number;
-//     userName: string;
-//     rating: number;
-//     date: string;
-//     title: string;
-//     comment: string;
-//     helpful: number;
-//     verified: boolean;
-//   }[];
-// };
-
 import { Category } from "@prisma/client";
 
 export interface ProductVariant {
@@ -38,6 +6,7 @@ export interface ProductVariant {
   price: number;
   stock: number;
   attributes: Record<string, string>;
+  name: string;
 }
 
 export interface ProductAttribute {

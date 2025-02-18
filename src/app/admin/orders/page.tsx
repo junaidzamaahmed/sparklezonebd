@@ -140,7 +140,7 @@ export default function OrdersPage() {
                     {order.status}
                   </Badge>
                 </TableCell>
-                <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
+                <TableCell>&#2547;{order.totalAmount.toFixed(2)}</TableCell>
                 <TableCell>{order.paymentMethod}</TableCell>
                 <TableCell>
                   <Button asChild variant="outline" size="sm">
