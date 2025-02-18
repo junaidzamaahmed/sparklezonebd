@@ -131,44 +131,32 @@ export default function ProductDetails() {
             <p className="text-gray-600">{product.description}</p>
 
             {/* Variants */}
-            {product?.variants &&
-              product.variants.map((variant) => (
-                <div className="space-y-4" key={variant.id}>
-                  <h3 className="text-sm font-medium text-gray-900">
-                    {variant.attributes.name}
-                  </h3>
-                  <div className="grid grid-cols-3 gap-4">
-                    {product?.variants?.map((variant: ProductVariant) => (
-                      <button
-                        key={variant.id}
-                        onClick={() => setSelectedVariant(variant)}
-                        className={`border rounded-lg py-3 px-4 text-sm font-medium ${
-                          selectedVariant?.id === variant.id
-                            ? "border-orange-400 bg-orange-50 text-orange-600"
-                            : variant.stock != 0
-                            ? "border-gray-200 text-gray-900 hover:bg-gray-50"
-                            : "border-gray-200 text-gray-400 cursor-not-allowed"
-                        }`}
-                        disabled={!variant.stock}
-                      >
-                        <span className="block">{variant?.name || ""}</span>
-                        <span className="block mt-1">
-                          {variant.attributes.name}
-                        </span>
-                        <span className="block mt-1">
-                          &#2547;{variant.price.toFixed(2)}
-                        </span>
-                        {!variant.stock && (
-                          <span className="block mt-1 text-xs text-red-500">
-                            Out of stock
-                          </span>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
 
+            {product?.variants?.map((variant: ProductVariant) => (
+              <button
+                key={variant.id}
+                onClick={() => setSelectedVariant(variant)}
+                className={`border rounded-lg py-3 px-4 text-sm font-medium ${
+                  selectedVariant?.id === variant.id
+                    ? "border-orange-400 bg-orange-50 text-orange-600"
+                    : variant.stock != 0
+                    ? "border-gray-200 text-gray-900 hover:bg-gray-50"
+                    : "border-gray-200 text-gray-400 cursor-not-allowed"
+                }`}
+                disabled={!variant.stock}
+              >
+                <span className="block">{variant?.name || ""}</span>
+                <span className="block mt-1">{variant.attributes.name}</span>
+                <span className="block mt-1">
+                  &#2547;{variant.price.toFixed(2)}
+                </span>
+                {!variant.stock && (
+                  <span className="block mt-1 text-xs text-red-500">
+                    Out of stock
+                  </span>
+                )}
+              </button>
+            ))}
             {/* Product price */}
             <p className="font-bold text-2xl">
               &#2547;

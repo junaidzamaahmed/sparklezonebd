@@ -25,6 +25,7 @@ export async function POST(
       price: parseFloat(body.price),
       stock: parseInt(body.stock),
       attributes: body.attributes,
+      name: body.name,
     },
   });
   return NextResponse.json(variant);

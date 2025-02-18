@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PlusCircle, X } from "lucide-react";
+import { PlusCircle, Trash, X } from "lucide-react";
 import {
   Brand,
   Category,
@@ -117,6 +117,7 @@ export function ProductForm({
         id: "",
         productId: product?.id || "",
         sku: `SKU-${index + 1}`,
+        name: "",
         price: Number(product?.regularPrice) || 0,
         stock: Number(product?.stock) || 0,
         attributes: variantAttributes,
@@ -124,6 +125,10 @@ export function ProductForm({
     });
 
     setVariants(newVariants);
+  }
+
+  function removeVariant(index: number) {
+    setVariants(variants.filter((_, i) => i !== index));
   }
 
   function cartesianProduct(arrays: string[][]): string[][] {
@@ -206,6 +211,7 @@ export function ProductForm({
         attributes,
         variants,
       };
+      console.log(productData);
 
       const url = product ? `/api/products/${product.id}` : "/api/products";
       const method = product ? "PUT" : "POST";
@@ -396,12 +402,30 @@ export function ProductForm({
         </div>
         {variants.map((variant, index) => (
           <div key={index} className="space-y-2 p-4 border rounded-md">
+            <div className="flex justify-end space-x-2 w-full">
+              <Button
+                type="button"
+                onClick={() => removeVariant(index)}
+                variant="destructive"
+                size="sm"
+              >
+                <Trash className="h-4 w-4" />
+              </Button>
+            </div>
             <Label htmlFor="sku">SKU</Label>
             <Input
               id="sku"
               placeholder="SKU"
               value={variant.sku}
               onChange={(e) => updateVariant(index, "sku", e.target.value)}
+              required
+            />
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              placeholder="Name"
+              value={variant.name || ""}
+              onChange={(e) => updateVariant(index, "name", e.target.value)}
               required
             />
             <Label htmlFor="price">Price</Label>

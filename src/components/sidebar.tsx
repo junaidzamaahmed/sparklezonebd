@@ -65,7 +65,9 @@ export function Sidebar() {
   return (
     <ShadcnSidebar>
       <SidebarHeader className="border-b p-4">
-        <h2 className="text-2xl font-semibold tracking-tight">Admin Panel</h2>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Sparkle Zone Admin Panel
+        </h2>
       </SidebarHeader>
       <SidebarContent>
         <ScrollArea className="flex-1 px-3">
@@ -90,7 +92,7 @@ export function Sidebar() {
         </ScrollArea>
       </SidebarContent>
       <SidebarFooter className="border-t p-4">
-        <p className="text-sm text-gray-500">© 2023 Your Company</p>
+        <p className="text-sm text-gray-500">© 2025 Sparkle Zone</p>
       </SidebarFooter>
     </ShadcnSidebar>
   );

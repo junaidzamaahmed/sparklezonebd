@@ -54,6 +54,7 @@ export async function POST(request: Request) {
             price: parseFloat(String(variant.price)),
             stock: parseInt(String(variant.stock)),
             attributes: variant.attributes,
+            name: variant.name,
           })),
         },
         images: body.images,
