@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCart } from "@/context/CartContext";
 import {
   Star,
@@ -16,7 +16,7 @@ import Image from "next/image";
 import { useProducts } from "@/context/ProductsContext";
 
 export default function ProductDetails() {
-  const { products } = useProducts();
+  const { products, loading } = useProducts();
   const { id } = useParams();
   const product = products.find((p) => p.id === id);
   const { addItem } = useCart();
@@ -25,13 +25,15 @@ export default function ProductDetails() {
   );
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-
-  if (!product) {
+  useEffect(() => {
+    setSelectedVariant(product?.variants?.[0] || null);
+  }, [product]);
+  if (loading || !product) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading products...</p>
+          <p className="mt-4 text-gray-600">Loading product details...</p>
         </div>
       </div>
     );
@@ -39,14 +41,17 @@ export default function ProductDetails() {
 
   const handleAddToCart = () => {
     addItem({
-      id: product.id,
-      name: `${product.name} ${
+      id: product?.id || "",
+      name: `${product?.name} ${
         selectedVariant ? "- " + selectedVariant?.sku : ""
       }`,
       price:
-        selectedVariant?.price || product.discountPrice || product.regularPrice,
+        selectedVariant?.price ||
+        product?.discountPrice ||
+        product?.regularPrice ||
+        0,
       quantity,
-      image: product.images[0],
+      image: product?.images?.[0] || "",
     });
   };
 
@@ -60,14 +65,16 @@ export default function ProductDetails() {
               <Image
                 width={400}
                 height={400}
-                src={product.images?.[selectedImage] || product.images[0]}
-                alt={product.name}
+                src={
+                  product?.images?.[selectedImage] || product?.images[0] || ""
+                }
+                alt={product?.name || ""}
                 className="h-[30rem] w-full object-cover object-center"
               />
             </div>
-            {product.images && (
+            {product?.images && (
               <div className="grid grid-cols-4 gap-4">
-                {product.images.map((image, index) => (
+                {product?.images.map((image, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
@@ -79,7 +86,7 @@ export default function ProductDetails() {
                       width={400}
                       height={400}
                       src={image}
-                      alt={`${product.name} ${index + 1}`}
+                      alt={`${product?.name} ${index + 1}`}
                       className="h-36 w-full object-cover object-center"
                     />
                   </button>
@@ -92,7 +99,7 @@ export default function ProductDetails() {
           <div className="space-y-6">
             <div className="space-y-2">
               <h1 className="text-3xl font-bold text-gray-900">
-                {product.name}
+                {product?.name}
               </h1>
               <div className="flex items-center space-x-4">
                 <div className="flex items-center">
@@ -102,10 +109,10 @@ export default function ProductDetails() {
                       className={`w-5 h-5 ${
                         i <
                         Math.floor(
-                          (product.reviews?.reduce(
+                          (product?.reviews?.reduce(
                             (acc, curr) => acc + curr.rating,
                             0
-                          ) || 0) / (product.reviews?.length || 1)
+                          ) || 0) / (product?.reviews?.length || 1)
                         )
                           ? "text-yellow-400 fill-yellow-400"
                           : "text-gray-300"
@@ -128,7 +135,7 @@ export default function ProductDetails() {
               </div>
             </div>
 
-            <p className="text-gray-600">{product.description}</p>
+            <p className="text-gray-600">{product?.description}</p>
 
             {/* Variants */}
 
@@ -161,8 +168,8 @@ export default function ProductDetails() {
             <p className="font-bold text-2xl">
               &#2547;
               {selectedVariant?.price ||
-                product.discountPrice ||
-                product.regularPrice}
+                product?.discountPrice ||
+                product?.regularPrice}
             </p>
 
             {/* Quantity */}
@@ -183,9 +190,9 @@ export default function ProductDetails() {
                 </button>
               </div>
               <button
-                onClick={handleAddToCart}
+                onClick={() => handleAddToCart()}
                 disabled={
-                  (!selectedVariant && !product.stock) ||
+                  (!selectedVariant && !product?.stock) ||
                   (selectedVariant ? !selectedVariant.stock : false)
                 }
                 className="flex-1 bg-orange-400 text-white py-3 px-6 rounded-lg font-medium hover:bg-orange-500 disabled:bg-gray-300 disabled:cursor-not-allowed"

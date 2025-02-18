@@ -9,10 +9,15 @@ import {
 import { ShoppingCart, Minus, Plus, Trash2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function Cart() {
-  const { items, removeItem, updateQuantity, itemsCount, total } = useCart();
+  const router = useRouter();
+  const { state, removeItem, updateQuantity, itemsCount, total } = useCart();
 
+  const handleCheckout = () => {
+    router.push("/checkout");
+  };
   return (
     <Sheet>
       <SheetTrigger className="relative">
@@ -28,12 +33,12 @@ export default function Cart() {
 
         <div className="mt-8 flex flex-col h-[calc(100vh-5rem)]">
           <div className="flex-1 overflow-y-auto">
-            {items.length === 0 ? (
+            {state.items.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 Your cart is empty
               </div>
             ) : (
-              items.map((item) => (
+              state.items.map((item) => (
                 <div key={item.id} className="flex gap-4 py-4 border-b">
                   <Image
                     height={100}
@@ -80,7 +85,7 @@ export default function Cart() {
             )}
           </div>
 
-          {items.length > 0 && (
+          {state.items.length > 0 && (
             <div className="border-t py-4 space-y-4">
               <div className="flex justify-between text-base font-medium text-gray-900">
                 <p>Subtotal</p>
@@ -94,7 +99,10 @@ export default function Cart() {
                 <p>Total</p>
                 <p>&#2547;{total.toFixed(2)}</p>
               </div>
-              <button className="w-full bg-orange-400 text-white py-3 px-4 rounded-full font-medium hover:bg-orange-500 transition-colors">
+              <button
+                onClick={handleCheckout}
+                className="w-full bg-orange-400 text-white py-3 px-4 rounded-full font-medium hover:bg-orange-500 transition-colors"
+              >
                 Checkout
               </button>
             </div>
