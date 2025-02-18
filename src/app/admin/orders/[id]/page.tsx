@@ -49,7 +49,7 @@ export default async function OrderDetailsPage({
             </p>
             <p>
               <strong>Total Amount:</strong> &#2547;
-              {order.totalAmount.toFixed(2)}
+              {order.totalAmount?.toFixed(2) || order.payment?.amount}
             </p>
           </CardContent>
         </Card>
