@@ -16,31 +16,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // const order = await db.order.create({
-    //   data: {
-    //     name: orderData.name,
-    //     email: orderData.email,
-    //     address: orderData.address,
-    //     phone: orderData.phone,
-    //     userId: user.id,
-    //     orderItems: {
-    //       create: items.map(
-    //         (item: { id: string; quantity: number; price: number }) => ({
-    //           productId: item.id,
-    //           quantity: item.quantity,
-    //           price: item.price,
-    //         })
-    //       ),
-    //     },
-    //     payment: {
-    //       create: {
-    //         amount: orderData.totalAmount,
-    //         paymentMethod: orderData.paymentMethod,
-    //         bKashNumber: orderData.bKashNumber || null,
-    //       },
-    //     },
-    //   },
-    // });
     //   Transaction
     const order = await db.$transaction(async (tx) => {
       const order = await tx.order.create({
