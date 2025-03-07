@@ -73,11 +73,12 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const product = await db.product.delete({
+    await db.product.delete({
       where: { id },
     });
     return NextResponse.json({ message: "Product deleted successfully" });
   } catch (error) {
+    console.log(error);
     return NextResponse.json({ error: "Product not found" }, { status: 404 });
   }
 }
