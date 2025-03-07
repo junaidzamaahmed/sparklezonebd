@@ -129,7 +129,7 @@ export default function OrderDetails() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6">
           <Link
-            href="/dashboard"
+            href="/user-dashboard"
             className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />

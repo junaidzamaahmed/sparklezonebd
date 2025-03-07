@@ -98,14 +98,20 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
           p.category.name.toLowerCase().includes(searchLower)
       );
     }
-
+    console.log(filters);
     if (filters.sort) {
       filtered.sort((a, b) => {
         switch (filters.sort) {
           case "price-low":
-            return a.regularPrice - b.regularPrice;
+            return (
+              (a.discountPrice || a.regularPrice) -
+              (b.discountPrice || b.regularPrice)
+            );
           case "price-high":
-            return b.regularPrice - a.regularPrice;
+            return (
+              (b.discountPrice || b.regularPrice) -
+              (a.discountPrice || a.regularPrice)
+            );
           case "rating":
             return (b.rating || 0) - (a.rating || 0);
           case "newest":

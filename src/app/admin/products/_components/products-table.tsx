@@ -171,9 +171,10 @@ export function ProductsTable() {
                 <TableCell>{product.brand.name}</TableCell>
                 <TableCell>&#2547;{product.regularPrice.toFixed(2)}</TableCell>
                 <TableCell>
+                  &#2547;
                   {product.discountPrice
-                    ? `&#2547;${product.discountPrice.toFixed(2)}`
-                    : "-"}
+                    ? `${product.discountPrice.toFixed(2)}`
+                    : " ----"}
                 </TableCell>
                 <TableCell>{product.stock}</TableCell>
                 <TableCell>

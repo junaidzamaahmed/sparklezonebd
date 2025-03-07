@@ -6,6 +6,8 @@ import Image from "next/image";
 import logo from "../../../public/logo.png";
 import Link from "next/link";
 import User from "../auth/user";
+import { SignedIn } from "@clerk/nextjs";
+import { Button } from "../ui/button";
 
 const categories = [
   {
@@ -61,6 +63,11 @@ export function Navbar() {
 
           {/* Right Section */}
           <div className="flex items-center space-x-4">
+            <SignedIn>
+              <Button asChild>
+                <Link href="/user-dashboard">Dashboard</Link>
+              </Button>
+            </SignedIn>
             <User />
             <Cart />
           </div>

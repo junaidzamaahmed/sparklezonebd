@@ -58,3 +58,23 @@ export async function POST(request: Request) {
     );
   }
 }
+
+export async function GET() {
+  try {
+    const orders = await db.order.findMany({
+      include: {
+        user: true,
+        orderItems: true,
+        payment: true,
+      },
+    });
+
+    return NextResponse.json(orders);
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}

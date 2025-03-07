@@ -65,7 +65,7 @@ export default async function OrderDetailsPage({
               <strong>Email:</strong> {order.user.email}
             </p>
             <p>
-              <strong>Address:</strong> {order.user.address}
+              <strong>Address:</strong> {order.address}
             </p>
           </CardContent>
         </Card>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -21,50 +21,41 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import Link from "next/link";
-
-// Dummy data
-const orders = [
-  {
-    id: "1",
-    user: { name: "John Doe" },
-    createdAt: new Date("2023-06-01"),
-    status: "DELIVERED",
-    totalAmount: 59.99,
-    paymentMethod: "BKASH",
-  },
-  {
-    id: "2",
-    user: { name: "Jane Smith" },
-    createdAt: new Date("2023-06-02"),
-    status: "PROCESSING",
-    totalAmount: 129.99,
-    paymentMethod: "CASH_ON_DELIVERY",
-  },
-  {
-    id: "3",
-    user: { name: "Bob Johnson" },
-    createdAt: new Date("2023-06-03"),
-    status: "SHIPPED",
-    totalAmount: 89.99,
-    paymentMethod: "BKASH",
-  },
-];
+import { Order, OrderItem, Payment, User } from "@prisma/client";
 
 const statuses = ["PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"];
 const paymentMethods = ["CASH_ON_DELIVERY", "BKASH"];
 
 export default function OrdersPage() {
+  const [orders, setOrders] = useState<
+    (Order & { user: User; orderItems: OrderItem[]; payment: Payment })[]
+  >([]);
+  useEffect(() => {
+    async function fetchOrders() {
+      try {
+        const res = await fetch("/api/orders");
+        const data = await res.json();
+        setOrders(data);
+      } catch (error) {
+        console.error("Failed to fetch orders", error);
+      }
+    }
+    fetchOrders();
+  }, []);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [paymentMethodFilter, setPaymentMethodFilter] = useState("");
 
   const filteredOrders = orders.filter(
     (order) =>
-      (order.user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (order.user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         order.id.includes(searchTerm)) &&
-      (statusFilter === "" || order.status === statusFilter) &&
-      (paymentMethodFilter === "" ||
-        order.paymentMethod === paymentMethodFilter)
+      (statusFilter == "" ||
+        statusFilter === "all" ||
+        order.status === statusFilter) &&
+      (paymentMethodFilter == "" ||
+        paymentMethodFilter === "all" ||
+        order.payment.paymentMethod === paymentMethodFilter)
   );
 
   return (
@@ -140,8 +131,13 @@ export default function OrdersPage() {
                     {order.status}
                   </Badge>
                 </TableCell>
-                <TableCell>&#2547;{order.totalAmount.toFixed(2)}</TableCell>
-                <TableCell>{order.paymentMethod}</TableCell>
+                <TableCell>
+                  &#2547;
+                  {order.orderItems
+                    .reduce((acc, item) => acc + item.quantity * item.price, 0)
+                    .toFixed(2)}
+                </TableCell>
+                <TableCell>{order.payment.paymentMethod}</TableCell>
                 <TableCell>
                   <Button asChild variant="outline" size="sm">
                     <Link href={`/admin/orders/${order.id}`}>View Details</Link>
