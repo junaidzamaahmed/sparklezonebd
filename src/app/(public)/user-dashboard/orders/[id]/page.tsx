@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 // Mock data - replace with actual API call
 const getOrder = (id: string) => ({
@@ -178,7 +179,9 @@ export default function OrderDetails() {
               <div className="divide-y">
                 {order.items.map((item) => (
                   <div key={item.id} className="p-4 flex items-center">
-                    <img
+                    <Image
+                      height={100}
+                      width={100}
                       src={item.image}
                       alt={item.name}
                       className="h-20 w-20 object-cover rounded-lg"
