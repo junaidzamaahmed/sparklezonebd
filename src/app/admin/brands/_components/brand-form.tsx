@@ -72,6 +72,7 @@ export function BrandForm({ brand }: { brand?: Brand }) {
 
       if (response.ok) {
         router.push("/admin/brands");
+        alert("Brand saved successfully");
         router.refresh();
       } else {
         console.error("Failed to save brand");

@@ -8,24 +8,16 @@ import Link from "next/link";
 import User from "../auth/user";
 import { SignedIn } from "@clerk/nextjs";
 import { Button } from "../ui/button";
+import { useProducts } from "@/context/ProductsContext";
+import { Category } from "@prisma/client";
 
-const categories = [
-  {
-    name: "Electronics",
-    subcategories: ["Phones", "Laptops", "Tablets", "Accessories"],
-  },
-  { name: "Fashion", subcategories: ["Men", "Women", "Kids", "Accessories"] },
-  {
-    name: "Home & Living",
-    subcategories: ["Furniture", "Decor", "Kitchen", "Bath"],
-  },
-  {
-    name: "Sports",
-    subcategories: ["Equipment", "Clothing", "Shoes", "Accessories"],
-  },
-];
+type CategoryWithSub = Category & {
+  subCategories: Category[];
+};
 
 export function Navbar() {
+  const { categories } = useProducts();
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
@@ -75,7 +67,7 @@ export function Navbar() {
 
         {/* Categories Bar */}
         <div className="hidden md:flex space-x-8 py-3">
-          {categories.map((category) => (
+          {categories.map((category: CategoryWithSub) => (
             <div
               key={category.name}
               className="relative group"
@@ -89,13 +81,13 @@ export function Navbar() {
               {activeCategory === category.name && (
                 <div className="absolute z-50 left-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                   <div className="py-1 mt-[-10px]">
-                    {category.subcategories.map((sub) => (
+                    {category.subCategories.map((sub) => (
                       <Link
-                        key={sub}
-                        href="#"
+                        key={sub.id}
+                        href={`/category/${sub.id}`}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
-                        {sub}
+                        {sub.name}
                       </Link>
                     ))}
                   </div>
@@ -131,19 +123,19 @@ export function Navbar() {
               </button>
             </div>
             <div className="space-y-4">
-              {categories.map((category) => (
+              {categories.map((category: CategoryWithSub) => (
                 <div key={category.name} className="space-y-2">
                   <div className="font-medium text-gray-900">
                     {category.name}
                   </div>
                   <div className="pl-4 space-y-2">
-                    {category.subcategories.map((sub) => (
+                    {category.subCategories.map((sub) => (
                       <Link
-                        key={sub}
+                        key={sub.id}
                         href="#"
                         className="block text-gray-600 hover:text-gray-900"
                       >
-                        {sub}
+                        {sub.name}
                       </Link>
                     ))}
                   </div>
