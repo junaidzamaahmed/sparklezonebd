@@ -84,7 +84,7 @@ export function Navbar() {
                     {category.subCategories.map((sub) => (
                       <Link
                         key={sub.id}
-                        href={`/category/${sub.id}`}
+                        href={`/shop?category=${sub.id}`}
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         {sub.name}
@@ -126,13 +126,15 @@ export function Navbar() {
               {categories.map((category: CategoryWithSub) => (
                 <div key={category.name} className="space-y-2">
                   <div className="font-medium text-gray-900">
-                    {category.name}
+                    <Link href={`/shop?category=${category.id}`}>
+                      {category.name}
+                    </Link>
                   </div>
                   <div className="pl-4 space-y-2">
                     {category.subCategories.map((sub) => (
                       <Link
                         key={sub.id}
-                        href="#"
+                        href={`/shop?category=${sub.id}`}
                         className="block text-gray-600 hover:text-gray-900"
                       >
                         {sub.name}

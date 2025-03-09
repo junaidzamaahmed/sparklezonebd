@@ -98,7 +98,6 @@ export function ProductsProvider({ children }: { children: React.ReactNode }) {
           p.category.name.toLowerCase().includes(searchLower)
       );
     }
-    console.log(filters);
     if (filters.sort) {
       filtered.sort((a, b) => {
         switch (filters.sort) {
